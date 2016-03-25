@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var request = require('request');
 var _ = require('underscore');
 
 /*
@@ -47,26 +48,23 @@ exports.isUrlInList = function(url, callback) {
   });
 };
 
-exports.addUrlToList = function(url) {
-  fs.writeFile(__dirname, '../archives/sites.txt', 'utf8', url, function(err, data) {
-    if (err) {
-      return err;
-    } else {
-      console.log('SAVE YO FILE!');
-    }
+exports.addUrlToList = function(url, callback) {
+  fs.appendFile(exports.paths.list, url + '\n', function(err, file) {
+    callback();
   });
-// Takes a URL and a filepath
-// Calls isURLInList
-// If isURLInList returns false, then we write the URL to the list.
 };
 
-exports.isUrlArchived = function() {
-//takes a storage file and a URL
-// Iterates through the storage file to see if URL is archived
-// returns boolean
+exports.isUrlArchived = function(url, callback) {
+  var sitePath = path.join(exports.paths.archivedSites, url);
+
+  fs.exists(sitePath, function(exists) {
+    callback(exists);
+  });
 };
 
-exports.downloadUrls = function() {
-//Takes a storage file and checks to see if URL is Archived
-// if true then return the URL and send it to the client
+exports.downloadUrls = function(urls) {
+  _.each(urls, function (url) {
+     if (!url) { return; }
+     request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + '/' + url));
+   });
 };
