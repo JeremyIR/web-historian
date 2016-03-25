@@ -76,7 +76,6 @@ exports.serveAssetsQ2 = function(res, asset, callback) {
   return sendAsset(assetPaths);
 };
 
-exports.serveAssets = exports.serveAssetsQ1;
 exports.sendRedirect = function(response, location, status) {
   status = status || 302;
   response.writeHead(status, {Location: location});
