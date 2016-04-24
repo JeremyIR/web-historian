@@ -11,16 +11,16 @@ var _ = require('underscore');
  */
 
 exports.paths = {
-  siteAssets: path.join(__dirname, '../web/public'),
-  archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+    siteAssets: path.join(__dirname, '../web/public'),
+    archivedSites: path.join(__dirname, '../archives/sites'),
+    list: path.join(__dirname, '../archives/sites.txt')
 };
 
 // Used for stubbing paths for tests, do not modify
 exports.initialize = function(pathsObj) {
-  _.each(pathsObj, function(path, type) {
-    exports.paths[type] = path;
-  });
+    _.each(pathsObj, function(path, type) {
+        exports.paths[type] = path;
+    });
 };
 
 // The following function names are provided to you to suggest how you might
@@ -28,43 +28,44 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
 
-  fs.readFile(exports.paths.list, 'utf8', function (err, sites) {
-    sites = sites.toString().split('\n');
-    if (callback) {
-      return callback(sites);
-    }
-  });
+    fs.readFile(exports.paths.list, 'utf8', function(err, sites) {
+        sites = sites.toString().split('\n');
+        if (callback) {
+            return callback(sites);
+        }
+    });
 };
 
 exports.isUrlInList = function(url, callback) {
-// Take a filepath and a URL
-// calls read list on file path
-// return a boolean if the URL is in the list
-  exports.readListOfUrls(function(sites) {
-    var found = _.any(sites, function(site, i) {
-      return site.match(url);
+    // Take a filepath and a URL
+    // calls read list on file path
+    // return a boolean if the URL is in the list
+    exports.readListOfUrls(function(sites) {
+        var found = _.any(sites, function(site, i) {
+            return site.match(url);
+        });
+        callback(found);
     });
-    callback(found);
-  });
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.appendFile(exports.paths.list, url + '\n', function(err, file) {
-    callback();
-  });
+    fs.appendFile(exports.paths.list, url + '\n', function(err, file) {
+        callback();
+    });
 };
 
 exports.isUrlArchived = function(url, callback) {
-  var sitePath = path.join(exports.paths.archivedSites, url);
+    var sitePath = path.join(exports.paths.archivedSites, url);
 
-  fs.exists(sitePath, function(exists) {
-    callback(exists);
-  });
+    fs.exists(sitePath, function(exists) {
+        callback(exists);
+    });
 };
 
 exports.downloadUrls = function(urls) {
-  _.each(urls, function (url) {
-    if (!url) { return; }
-    request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + '/' + url));
-  });
+    _.each(urls, function(url) {
+        if (!url) {
+            return; }
+        request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + '/' + url));
+    });
 };
